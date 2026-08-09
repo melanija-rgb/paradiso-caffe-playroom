@@ -254,18 +254,28 @@ body.nav-open {
   animation: rise-in 1s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards;
 }
 
-.hero__lead {
-  margin: 1.75rem 0 0;
+.hero__copy {
+  width: min(36rem, 100%);
+  margin: 1.75rem auto 0;
   font-family: var(--font-display);
-  font-size: clamp(1.25rem, 2.8vw, 1.7rem);
+  font-size: clamp(1.05rem, 2.2vw, 1.35rem);
   font-weight: 500;
-  font-style: italic;
-  letter-spacing: 0.04em;
+  line-height: 1.55;
+  letter-spacing: 0.03em;
   color: rgba(255, 248, 230, 0.95);
   text-shadow: 0 2px 16px rgba(0, 0, 0, 0.45);
   opacity: 0;
   transform: translateY(1rem);
   animation: rise-in 1s cubic-bezier(0.22, 1, 0.36, 1) 0.7s forwards;
+}
+
+.hero__copy p {
+  margin: 0 0 0.85em;
+}
+
+.hero__copy p:last-child {
+  margin-bottom: 0;
+  font-style: italic;
 }
 
 /* —— O nama —— */
@@ -1201,14 +1211,14 @@ body.nav-open {
   .hero__media,
   .hero__title,
   .hero__subtitle,
-  .hero__lead,
+  .hero__copy,
   .about__text p.is-visible {
     animation: none;
   }
 
   .hero__title,
   .hero__subtitle,
-  .hero__lead {
+  .hero__copy {
     opacity: 1;
     transform: none;
   }
