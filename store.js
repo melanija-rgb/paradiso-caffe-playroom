@@ -11,8 +11,6 @@ const ParadisoStore = (() => {
 
   const DEFAULT_GALLERY = [
     { id: "ig-01", section: "igraonica", src: "images/galerija/igraonica/01-igraonica.png", alt: "Igraonica Paradiso — sto za stoni fudbal i prostor za igru" },
-    { id: "ig-02", section: "igraonica", src: "images/galerija/igraonica/02-igraonica.png", alt: "Igraonica Paradiso — kuhinjica za igru" },
-    { id: "ig-04", section: "igraonica", src: "images/galerija/igraonica/04-igraonica.png", alt: "Igraonica Paradiso — prostor pun igre i svjetla" },
     { id: "ig-05", section: "igraonica", src: "images/galerija/igraonica/05-igraonica.png", alt: "Igraonica Paradiso — kućica, tobogan i bazen s lopticama" },
     { id: "ig-07", section: "igraonica", src: "images/galerija/igraonica/07-igraonica.png", alt: "Igraonica Paradiso — igračke i avanture" },
     { id: "dek-08", section: "dekoracije", src: "images/galerija/igraonica/08-dekoracije.png", alt: "Rođendanske dekoracije u igraonici Paradiso" },
@@ -25,7 +23,6 @@ const ParadisoStore = (() => {
     { id: "ka-13", section: "kafic", src: "images/galerija/kafic/13-kafic.png", alt: "Dugački sto spreman za druženje" },
     { id: "ka-14", section: "kafic", src: "images/galerija/kafic/14-kafic.png", alt: "Svečani ambijent u Paradiso kafiću" },
     { id: "ka-04", section: "kafic", src: "images/galerija/kafic/04-kafic.png", alt: "Desert u Paradiso kafiću" },
-    { id: "ka-07", section: "kafic", src: "images/galerija/kafic/07-kafic.png", alt: "Sladoled za najmlađe na terasi" },
     { id: "pi-01", section: "pica", src: "images/galerija/kafic/01-kafic.png", alt: "Kafa i desert u Paradiso kafiću" },
     { id: "pi-05", section: "pica", src: "images/galerija/kafic/05-kafic.png", alt: "Kafa na terasi Paradiso" },
     { id: "pi-06", section: "pica", src: "images/galerija/kafic/06-kafic.png", alt: "Ledena kafa i donut na terasi" },
