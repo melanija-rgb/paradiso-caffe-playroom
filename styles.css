@@ -1178,7 +1178,7 @@ body.nav-open {
   }
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1100px) {
   .site-header {
     justify-content: flex-end;
     padding-top: 0.65rem;
@@ -1195,10 +1195,10 @@ body.nav-open {
     z-index: 45;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     justify-content: flex-start;
     gap: 0;
-    padding: calc(var(--header-h) + 1.25rem) 1.5rem 2.5rem;
+    padding: calc(var(--header-h) + 1.5rem) 0 2.5rem;
     background: rgba(11, 21, 16, 0.98);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -1218,9 +1218,11 @@ body.nav-open {
 
   .site-nav a {
     width: 100%;
-    padding: 1rem 0;
-    font-size: 1rem;
-    letter-spacing: 0.16em;
+    box-sizing: border-box;
+    padding: 1.05rem 1.25rem;
+    font-size: 1.05rem;
+    letter-spacing: 0.08em;
+    text-align: left;
     border-bottom: 1px solid rgba(201, 168, 76, 0.18);
   }
 
