@@ -51,7 +51,7 @@ a {
   min-height: var(--header-h);
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   padding: 0 clamp(1rem, 3vw, 2rem);
   background: transparent;
   border-bottom: 1px solid transparent;
