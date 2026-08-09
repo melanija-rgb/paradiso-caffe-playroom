@@ -18,7 +18,6 @@ const ParadisoStore = (() => {
     { id: "dek-10", section: "dekoracije", src: "images/galerija/igraonica/10-dekoracije.png", alt: "Rođendanski sto dekorisan po želji slavljenika" },
     { id: "dek-11", section: "dekoracije", src: "images/galerija/igraonica/11-dekoracije.png", alt: "Rođendanska atmosfera u igraonici Paradiso" },
     { id: "ka-02", section: "kafic", src: "images/galerija/kafic/02-kafic.png", alt: "Ulaz u Paradiso Caffe & Playroom" },
-    { id: "ka-03", section: "kafic", src: "images/galerija/kafic/03-kafic.png", alt: "Enterijer Paradiso kafića" },
     { id: "ka-09", section: "kafic", src: "images/galerija/kafic/09-kafic.png", alt: "Ambijent i detalji Paradiso kafića" },
     { id: "ka-13", section: "kafic", src: "images/galerija/kafic/13-kafic.png", alt: "Dugački sto spreman za druženje" },
     { id: "ka-14", section: "kafic", src: "images/galerija/kafic/14-kafic.png", alt: "Svečani ambijent u Paradiso kafiću" },
