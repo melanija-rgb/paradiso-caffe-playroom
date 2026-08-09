@@ -278,9 +278,11 @@ body.nav-open {
 }
 
 .about__text {
-  font-family: var(--font-script);
-  font-size: clamp(1.55rem, 3.4vw, 2.15rem);
-  line-height: 1.55;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.15rem, 2.2vw, 1.4rem);
+  line-height: 1.75;
+  letter-spacing: 0.04em;
   color: var(--gold-deep);
 }
 
