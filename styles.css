@@ -880,6 +880,8 @@ body.nav-open {
 .contact__text strong {
   font-weight: 500;
   font-size: 1rem;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .contact__text span {
@@ -1292,6 +1294,15 @@ body.nav-open {
 @media (max-width: 640px) {
   .contact__social {
     grid-template-columns: 1fr;
+  }
+
+  .contact__text strong {
+    font-size: 0.82rem;
+  }
+
+  .contact__link {
+    gap: 0.65rem;
+    padding: 0.85rem 0.8rem;
   }
 
   .contact__address-bar {
