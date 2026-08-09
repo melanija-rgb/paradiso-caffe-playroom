@@ -3,11 +3,11 @@ const ParadisoStore = (() => {
   const KEYS = {
     reservations: "paradiso_reservations",
     gallery: "paradiso_gallery",
-    session: "paradiso_admin_session",
+    session: "paradiso_admin_session_v2",
   };
 
   const ADMIN_PASS_HASH =
-    "8a1439b70de6daa080beb98b4791398284421e2815f0a31bf17c23b879b93b85";
+    "3404217d72d0c7e6a1a21f95c3083eb2487ee55643f6482a5026e0bfe97d0e96";
 
   const DEFAULT_GALLERY = [
     { id: "ig-01", section: "igraonica", src: "images/galerija/igraonica/01-igraonica.png", alt: "Igraonica Paradiso — sto za stoni fudbal i prostor za igru" },

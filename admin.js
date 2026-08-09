@@ -21,6 +21,13 @@ let galleryFilter = "all";
 function showPanel(loggedIn) {
   loginView.hidden = loggedIn;
   panelView.hidden = !loggedIn;
+  document.body.classList.toggle("is-admin-authed", loggedIn);
+}
+
+function requireAuth() {
+  if (ParadisoStore.isLoggedIn()) return true;
+  showPanel(false);
+  return false;
 }
 
 function formatDate(iso) {
@@ -30,6 +37,7 @@ function formatDate(iso) {
 }
 
 function renderReservations() {
+  if (!requireAuth()) return;
   const list = ParadisoStore.getReservations();
   reservationsBody.innerHTML = "";
   reservationsEmpty.hidden = list.length > 0;
@@ -49,6 +57,7 @@ function renderReservations() {
 }
 
 function renderGallery() {
+  if (!requireAuth()) return;
   const images = ParadisoStore.getGalleryImages().filter(
     (img) => galleryFilter === "all" || img.section === galleryFilter
   );
@@ -114,6 +123,7 @@ document.querySelectorAll(".admin-tabs__btn").forEach((btn) => {
 
 reservationForm.addEventListener("submit", (event) => {
   event.preventDefault();
+  if (!requireAuth()) return;
   const data = new FormData(reservationForm);
   ParadisoStore.addReservation({
     datum: data.get("datum"),
@@ -129,7 +139,7 @@ reservationForm.addEventListener("submit", (event) => {
 
 reservationsBody.addEventListener("click", (event) => {
   const btn = event.target.closest("[data-id]");
-  if (!btn) return;
+  if (!btn || !requireAuth()) return;
   if (!confirm("Obrisati ovu rezervaciju?")) return;
   ParadisoStore.deleteReservation(btn.dataset.id);
   renderReservations();
@@ -146,6 +156,7 @@ document.querySelectorAll(".admin-filter").forEach((btn) => {
 
 galleryForm.addEventListener("submit", async (event) => {
   event.preventDefault();
+  if (!requireAuth()) return;
   const data = new FormData(galleryForm);
   const file = data.get("image");
   if (!(file instanceof File) || !file.size) return;
@@ -167,7 +178,7 @@ galleryForm.addEventListener("submit", async (event) => {
 
 galleryGrid.addEventListener("click", (event) => {
   const btn = event.target.closest("[data-gallery-id]");
-  if (!btn) return;
+  if (!btn || !requireAuth()) return;
   if (!confirm("Obrisati ovu sliku iz galerije?")) return;
   ParadisoStore.deleteGalleryImage(btn.dataset.galleryId);
   renderGallery();
