@@ -255,27 +255,33 @@ body.nav-open {
 }
 
 .hero__copy {
-  width: min(36rem, 100%);
+  width: min(34rem, 100%);
   margin: 1.75rem auto 0;
+  padding: 1.25rem 1.4rem;
+  border-radius: 1rem;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
   font-family: var(--font-display);
   font-size: clamp(1.05rem, 2.2vw, 1.35rem);
   font-weight: 500;
   line-height: 1.55;
   letter-spacing: 0.03em;
-  color: rgba(255, 248, 230, 0.95);
-  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.45);
+  color: rgba(255, 248, 230, 0.96);
   opacity: 0;
   transform: translateY(1rem);
   animation: rise-in 1s cubic-bezier(0.22, 1, 0.36, 1) 0.7s forwards;
 }
 
 .hero__copy p {
-  margin: 0 0 0.85em;
+  margin: 0 0 0.7em;
+}
+
+.hero__copy p:first-child {
+  font-style: italic;
 }
 
 .hero__copy p:last-child {
   margin-bottom: 0;
-  font-style: italic;
 }
 
 /* —— O nama —— */
