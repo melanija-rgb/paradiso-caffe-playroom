@@ -281,6 +281,41 @@ body.nav-open {
   margin-bottom: 0;
 }
 
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.85rem;
+  margin-top: 1.75rem;
+  opacity: 0;
+  transform: translateY(1rem);
+  animation: rise-in 1s cubic-bezier(0.22, 1, 0.36, 1) 0.9s forwards;
+}
+
+.hero__cta {
+  display: inline-block;
+  padding: 0.9rem 1.4rem;
+  border: 1px solid var(--gold);
+  background: rgba(11, 21, 16, 0.55);
+  color: var(--gold-soft);
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: center;
+  transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+.hero__cta:hover,
+.hero__cta:focus-visible {
+  background: var(--gold);
+  color: var(--forest);
+  transform: translateY(-2px);
+}
+
+.hero__cta--ghost {
+  background: transparent;
+}
+
 /* —— O nama —— */
 .page-about {
   background: var(--forest);
@@ -1217,13 +1252,15 @@ body.nav-open {
   .hero__title,
   .hero__subtitle,
   .hero__copy,
+  .hero__actions,
   .about__text p.is-visible {
     animation: none;
   }
 
   .hero__title,
   .hero__subtitle,
-  .hero__copy {
+  .hero__copy,
+  .hero__actions {
     opacity: 1;
     transform: none;
   }
@@ -1322,6 +1359,11 @@ body.nav-open {
   .hero__subtitle {
     letter-spacing: 0.18em;
     padding-inline: 0.18em;
+  }
+
+  .hero__actions {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .about__text {
