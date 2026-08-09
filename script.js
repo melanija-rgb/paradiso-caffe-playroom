@@ -1,5 +1,29 @@
 const header = document.querySelector(".site-header");
+const navToggle = document.querySelector(".nav-toggle");
+const siteNav = document.querySelector(".site-nav");
 const aboutLines = document.querySelectorAll(".about__text p");
+
+const setNavOpen = (open) => {
+  if (!header || !navToggle) return;
+  header.classList.toggle("is-open", open);
+  navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+  document.body.classList.toggle("nav-open", open);
+};
+
+if (navToggle && siteNav) {
+  navToggle.addEventListener("click", () => {
+    const open = navToggle.getAttribute("aria-expanded") !== "true";
+    setNavOpen(open);
+  });
+
+  siteNav.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => setNavOpen(false));
+  });
+
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") setNavOpen(false);
+  });
+}
 
 const onScroll = () => {
   if (!header || header.classList.contains("is-solid")) return;

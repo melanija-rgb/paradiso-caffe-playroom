@@ -14,7 +14,12 @@
   </head>
   <body class="page-admin">
     <header class="site-header is-solid">
-      <nav class="site-nav" aria-label="Glavna navigacija">
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Meni">
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+      </button>
+      <nav class="site-nav" id="site-nav" aria-label="Glavna navigacija">
         <a href="index.html">Početna</a>
         <a href="galerija.html">Galerija</a>
         <a href="rezervisi-proslavu.html">Rezerviši proslavu</a>
@@ -135,6 +140,7 @@
     </main>
 
     <script src="store.js"></script>
+    <script src="script.js"></script>
     <script src="admin.js"></script>
   </body>
 </html>
