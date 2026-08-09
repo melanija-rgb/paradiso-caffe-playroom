@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="sr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin | Paradiso Caffe & Playroom</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="page-admin">
+    <header class="site-header is-solid">
+      <nav class="site-nav" aria-label="Glavna navigacija">
+        <a href="index.html">Početna</a>
+        <a href="galerija.html">Galerija</a>
+        <a href="rezervisi-proslavu.html">Rezerviši proslavu</a>
+        <a href="admin.html" aria-current="page">Admin</a>
+      </nav>
+    </header>
+
+    <main class="admin">
+      <section class="admin-login" id="admin-login">
+        <h1 class="admin__title">Admin prijava</h1>
+        <form class="admin-login__form" id="login-form">
+          <label class="booking__field">
+            <span>Šifra</span>
+            <input type="password" id="admin-password" autocomplete="current-password" required />
+          </label>
+          <p class="booking__error" id="login-error" hidden>Pogrešna šifra.</p>
+          <button type="submit" class="booking__submit">Prijavi se</button>
+        </form>
+      </section>
+
+      <section class="admin-panel" id="admin-panel" hidden>
+        <div class="admin-panel__top">
+          <h1 class="admin__title">Admin panel</h1>
+          <button type="button" class="admin__logout" id="admin-logout">Odjava</button>
+        </div>
+
+        <div class="admin-tabs" role="tablist">
+          <button type="button" class="admin-tabs__btn is-active" data-tab="rezervacije">Rezervacije</button>
+          <button type="button" class="admin-tabs__btn" data-tab="galerija">Galerija</button>
+        </div>
+
+        <div class="admin-tab" id="tab-rezervacije">
+          <h2 class="admin__heading">Nova rezervacija</h2>
+          <form class="admin-form" id="admin-reservation-form">
+            <label class="booking__field">
+              <span>Datum</span>
+              <input type="date" name="datum" required />
+            </label>
+            <label class="booking__field">
+              <span>Vrijeme</span>
+              <select name="vrijeme" required>
+                <option value="12:00–15:00">12:00 – 15:00</option>
+                <option value="17:00–20:00">17:00 – 20:00</option>
+              </select>
+            </label>
+            <label class="booking__field">
+              <span>Paket</span>
+              <select name="paket" required>
+                <option value="Paket 1">Paket 1</option>
+                <option value="Paket 2">Paket 2</option>
+              </select>
+            </label>
+            <label class="booking__field">
+              <span>Ime i prezime</span>
+              <input type="text" name="ime" required />
+            </label>
+            <label class="booking__field">
+              <span>Broj telefona</span>
+              <input type="tel" name="telefon" required />
+            </label>
+            <button type="submit" class="booking__submit">Dodaj rezervaciju</button>
+          </form>
+
+          <h2 class="admin__heading">Sve rezervacije</h2>
+          <div class="admin-table-wrap">
+            <table class="admin-table" id="reservations-table">
+              <thead>
+                <tr>
+                  <th>Datum</th>
+                  <th>Vrijeme</th>
+                  <th>Paket</th>
+                  <th>Ime</th>
+                  <th>Telefon</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <p class="admin__empty" id="reservations-empty" hidden>Nema rezervacija.</p>
+        </div>
+
+        <div class="admin-tab" id="tab-galerija" hidden>
+          <h2 class="admin__heading">Dodaj sliku</h2>
+          <form class="admin-form" id="admin-gallery-form">
+            <label class="booking__field">
+              <span>Odjeljak</span>
+              <select name="section" required>
+                <option value="igraonica">Igraonica</option>
+                <option value="dekoracije">Dekoracije igraonice</option>
+                <option value="kafic">Kafić</option>
+                <option value="pica">Pića</option>
+              </select>
+            </label>
+            <label class="booking__field">
+              <span>Opis (opciono)</span>
+              <input type="text" name="alt" placeholder="Kratki opis slike" />
+            </label>
+            <label class="booking__field">
+              <span>Slika</span>
+              <input type="file" name="image" accept="image/*" required />
+            </label>
+            <p class="admin__hint">Preporuka: manje slike (do ~1 MB) radi bržeg učitavanja.</p>
+            <button type="submit" class="booking__submit">Dodaj u galeriju</button>
+          </form>
+
+          <h2 class="admin__heading">Upravljanje slikama</h2>
+          <div class="admin-gallery-filters">
+            <button type="button" class="admin-filter is-active" data-section="all">Sve</button>
+            <button type="button" class="admin-filter" data-section="igraonica">Igraonica</button>
+            <button type="button" class="admin-filter" data-section="dekoracije">Dekoracije</button>
+            <button type="button" class="admin-filter" data-section="kafic">Kafić</button>
+            <button type="button" class="admin-filter" data-section="pica">Pića</button>
+          </div>
+          <div class="admin-gallery-grid" id="admin-gallery-grid"></div>
+        </div>
+      </section>
+    </main>
+
+    <script src="store.js"></script>
+    <script src="admin.js"></script>
+  </body>
+</html>

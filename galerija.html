@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="sr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Galerija | Paradiso Caffe & Playroom</title>
+    <meta
+      name="description"
+      content="Galerija Paradiso — igraonica i caffe bar."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Great+Vibes&family=Outfit:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="page-gallery">
+    <header class="site-header is-solid">
+      <nav class="site-nav" aria-label="Glavna navigacija">
+        <a href="index.html">Početna</a>
+        <a href="o-nama.html">O nama</a>
+        <a href="galerija.html" aria-current="page">Galerija</a>
+        <a href="rodjendanski-paketi.html">Rođendanski paketi</a>
+        <a href="rezervisi-proslavu.html">Rezerviši proslavu</a>
+        <a href="kontakt.html">Kontakt</a>
+        <a href="admin.html">Admin</a>
+      </nav>
+    </header>
+
+    <main class="gallery">
+      <header class="gallery__intro">
+        <h1 class="gallery__title">Galerija</h1>
+        <nav class="gallery__tabs" aria-label="Odjeljci galerije">
+          <a href="#igraonica">Igraonica</a>
+          <a href="#kafic">Kafić</a>
+        </nav>
+      </header>
+
+      <section id="igraonica" class="gallery__section" aria-labelledby="igraonica-heading">
+        <h2 id="igraonica-heading" class="gallery__section-title">Igraonica</h2>
+        <div class="gallery__stack" id="stack-igraonica"></div>
+
+        <h3 class="gallery__subtitle">Dekoracije igraonice</h3>
+        <div class="gallery__stack" id="stack-dekoracije"></div>
+      </section>
+
+      <section id="kafic" class="gallery__section" aria-labelledby="kafic-heading">
+        <h2 id="kafic-heading" class="gallery__section-title">Kafić</h2>
+        <div class="gallery__stack" id="stack-kafic"></div>
+
+        <h3 class="gallery__subtitle">Pića</h3>
+        <div class="gallery__stack" id="stack-pica"></div>
+      </section>
+    </main>
+
+    <script src="store.js"></script>
+    <script src="gallery.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
