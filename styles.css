@@ -262,7 +262,8 @@ body.nav-open {
   font-weight: 500;
   line-height: 1.55;
   letter-spacing: 0.03em;
-  color: #0b1510;
+  color: var(--gold-soft);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
   opacity: 0;
   transform: translateY(1rem);
   animation: rise-in 1s cubic-bezier(0.22, 1, 0.36, 1) 0.7s forwards;
