@@ -1,7 +1,6 @@
 import { connectLambda, getStore } from "@netlify/blobs";
 
 const STORE_NAME = "reservations";
-const LIST_KEY = "all";
 const ADMIN_PASS_HASH =
   "3404217d72d0c7e6a1a21f95c3083eb2487ee55643f6482a5026e0bfe97d0e96";
 
@@ -22,22 +21,44 @@ function json(statusCode, body) {
   };
 }
 
-function getReservationsStore(event) {
+function openStore(event) {
   connectLambda(event);
   return getStore(STORE_NAME);
 }
 
-async function readList(event) {
-  const store = getReservationsStore(event);
-  const data = await store.get(LIST_KEY, { type: "json" });
-  if (Array.isArray(data)) return data;
-  if (data && Array.isArray(data.items)) return data.items;
-  return [];
+function blobKey(id) {
+  return `item/${id}`;
 }
 
-async function writeList(event, items) {
-  const store = getReservationsStore(event);
-  await store.setJSON(LIST_KEY, { items });
+async function listReservations(store) {
+  const result = await store.list({ prefix: "item/" });
+  const blobs = result.blobs || [];
+  const items = [];
+
+  for (const entry of blobs) {
+    const data = await store.get(entry.key, { type: "json" });
+    if (data && data.id) items.push(data);
+  }
+
+  // Migrate legacy single-list blob if present
+  if (!items.length) {
+    const legacy = await store.get("all", { type: "json" });
+    const legacyItems = Array.isArray(legacy)
+      ? legacy
+      : legacy && Array.isArray(legacy.items)
+        ? legacy.items
+        : [];
+    for (const item of legacyItems) {
+      if (!item?.id) continue;
+      await store.setJSON(blobKey(item.id), item);
+      items.push(item);
+    }
+  }
+
+  items.sort((a, b) =>
+    String(b.createdAt || "").localeCompare(String(a.createdAt || ""))
+  );
+  return items;
 }
 
 function isAdmin(event) {
@@ -94,14 +115,13 @@ export async function handler(event) {
   }
 
   try {
+    const store = openStore(event);
+
     if (event.httpMethod === "GET") {
       if (!isAdmin(event)) {
         return json(401, { error: "Nedozvoljen pristup." });
       }
-      const items = await readList(event);
-      items.sort((a, b) =>
-        String(b.createdAt || "").localeCompare(String(a.createdAt || ""))
-      );
+      const items = await listReservations(store);
       return json(200, { items });
     }
 
@@ -120,9 +140,7 @@ export async function handler(event) {
         return json(401, { error: "Nedozvoljen pristup." });
       }
 
-      const items = await readList(event);
-      items.unshift(item);
-      await writeList(event, items);
+      await store.setJSON(blobKey(item.id), item);
       return json(201, { item });
     }
 
@@ -135,12 +153,11 @@ export async function handler(event) {
       const id = cleanText(params.id, 80);
       if (!id) return json(400, { error: "Nedostaje ID rezervacije." });
 
-      const items = await readList(event);
-      const next = items.filter((entry) => entry.id !== id);
-      if (next.length === items.length) {
+      const existing = await store.get(blobKey(id), { type: "json" });
+      if (!existing) {
         return json(404, { error: "Rezervacija nije pronađena." });
       }
-      await writeList(event, next);
+      await store.delete(blobKey(id));
       return json(200, { ok: true });
     }
 
