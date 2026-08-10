@@ -1,4 +1,4 @@
-import { getStore } from "@netlify/blobs";
+import { connectLambda, getStore } from "@netlify/blobs";
 
 const STORE_NAME = "reservations";
 const LIST_KEY = "all";
@@ -22,20 +22,21 @@ function json(statusCode, body) {
   };
 }
 
-function getStoreSafe() {
+function getReservationsStore(event) {
+  connectLambda(event);
   return getStore({ name: STORE_NAME, consistency: "strong" });
 }
 
-async function readList() {
-  const store = getStoreSafe();
+async function readList(event) {
+  const store = getReservationsStore(event);
   const data = await store.get(LIST_KEY, { type: "json" });
   if (Array.isArray(data)) return data;
   if (data && Array.isArray(data.items)) return data.items;
   return [];
 }
 
-async function writeList(items) {
-  const store = getStoreSafe();
+async function writeList(event, items) {
+  const store = getReservationsStore(event);
   await store.setJSON(LIST_KEY, { items });
 }
 
@@ -97,7 +98,7 @@ export async function handler(event) {
       if (!isAdmin(event)) {
         return json(401, { error: "Nedozvoljen pristup." });
       }
-      const items = await readList();
+      const items = await readList(event);
       items.sort((a, b) =>
         String(b.createdAt || "").localeCompare(String(a.createdAt || ""))
       );
@@ -119,9 +120,9 @@ export async function handler(event) {
         return json(401, { error: "Nedozvoljen pristup." });
       }
 
-      const items = await readList();
+      const items = await readList(event);
       items.unshift(item);
-      await writeList(items);
+      await writeList(event, items);
       return json(201, { item });
     }
 
@@ -134,18 +135,21 @@ export async function handler(event) {
       const id = cleanText(params.id, 80);
       if (!id) return json(400, { error: "Nedostaje ID rezervacije." });
 
-      const items = await readList();
+      const items = await readList(event);
       const next = items.filter((entry) => entry.id !== id);
       if (next.length === items.length) {
         return json(404, { error: "Rezervacija nije pronađena." });
       }
-      await writeList(next);
+      await writeList(event, next);
       return json(200, { ok: true });
     }
 
     return json(405, { error: "Metoda nije dozvoljena." });
   } catch (error) {
     console.error("reservations function error", error);
-    return json(500, { error: "Serverska greška. Pokušajte ponovo." });
+    return json(500, {
+      error: "Serverska greška. Pokušajte ponovo.",
+      detail: String(error && error.message ? error.message : error),
+    });
   }
 }
