@@ -24,7 +24,7 @@ function json(statusCode, body) {
 
 function getReservationsStore(event) {
   connectLambda(event);
-  return getStore({ name: STORE_NAME, consistency: "strong" });
+  return getStore(STORE_NAME);
 }
 
 async function readList(event) {
@@ -147,9 +147,6 @@ export async function handler(event) {
     return json(405, { error: "Metoda nije dozvoljena." });
   } catch (error) {
     console.error("reservations function error", error);
-    return json(500, {
-      error: "Serverska greška. Pokušajte ponovo.",
-      detail: String(error && error.message ? error.message : error),
-    });
+    return json(500, { error: "Serverska greška. Pokušajte ponovo." });
   }
 }
