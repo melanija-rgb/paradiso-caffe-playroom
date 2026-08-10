@@ -1,5 +1,5 @@
 /* Shared data store for reservations + gallery (localStorage) */
-const ParadisoStore = (() => {
+window.ParadisoStore = (() => {
   const KEYS = {
     reservations: "paradiso_reservations",
     gallery: "paradiso_gallery",

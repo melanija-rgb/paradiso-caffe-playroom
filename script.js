@@ -202,16 +202,20 @@ if (bookingForm) {
       return;
     }
 
-    if (window.ParadisoStore) {
-      ParadisoStore.addReservation({
-        datum: dateInput.value,
-        vrijeme: vrijeme.value,
-        paket: paket.value,
-        ime,
-        telefon,
-        source: "web",
-      });
+    if (!window.ParadisoStore) {
+      errorEl.textContent = "Greška pri čuvanju rezervacije. Osvježite stranicu i pokušajte ponovo.";
+      errorEl.hidden = false;
+      return;
     }
+
+    ParadisoStore.addReservation({
+      datum: dateInput.value,
+      vrijeme: vrijeme.value,
+      paket: paket.value,
+      ime,
+      telefon,
+      source: "web",
+    });
 
     bookingForm.hidden = true;
     successEl.hidden = false;
