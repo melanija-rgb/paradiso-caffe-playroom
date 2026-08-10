@@ -36,24 +36,33 @@ function formatDate(iso) {
   return `${d}.${m}.${y}.`;
 }
 
-function renderReservations() {
+async function renderReservations() {
   if (!requireAuth()) return;
-  const list = ParadisoStore.getReservations();
   reservationsBody.innerHTML = "";
-  reservationsEmpty.hidden = list.length > 0;
+  reservationsEmpty.hidden = true;
 
-  list.forEach((item) => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
+  try {
+    const list = await ParadisoStore.getReservations();
+    reservationsEmpty.hidden = list.length > 0;
+
+    list.forEach((item) => {
+      const phone = String(item.telefon || "");
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
       <td>${formatDate(item.datum)}</td>
-      <td>${item.vrijeme}</td>
-      <td>${item.paket}</td>
-      <td>${item.ime}</td>
-      <td><a href="tel:${item.telefon.replace(/\s/g, "")}">${item.telefon}</a></td>
+      <td>${item.vrijeme || ""}</td>
+      <td>${item.paket || ""}</td>
+      <td>${item.ime || ""}</td>
+      <td><a href="tel:${phone.replace(/\s/g, "")}">${phone}</a></td>
       <td><button type="button" class="admin-delete" data-id="${item.id}">Obriši</button></td>
     `;
-    reservationsBody.appendChild(tr);
-  });
+      reservationsBody.appendChild(tr);
+    });
+  } catch (error) {
+    reservationsEmpty.hidden = false;
+    reservationsEmpty.textContent =
+      error.message || "Ne mogu učitati rezervacije.";
+  }
 }
 
 function renderGallery() {
@@ -101,7 +110,7 @@ loginForm.addEventListener("submit", async (event) => {
     return;
   }
   showPanel(true);
-  renderReservations();
+  await renderReservations();
   renderGallery();
 });
 
@@ -121,28 +130,36 @@ document.querySelectorAll(".admin-tabs__btn").forEach((btn) => {
   });
 });
 
-reservationForm.addEventListener("submit", (event) => {
+reservationForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!requireAuth()) return;
   const data = new FormData(reservationForm);
-  ParadisoStore.addReservation({
-    datum: data.get("datum"),
-    vrijeme: data.get("vrijeme"),
-    paket: data.get("paket"),
-    ime: String(data.get("ime") || "").trim(),
-    telefon: String(data.get("telefon") || "").trim(),
-    source: "admin",
-  });
-  reservationForm.reset();
-  renderReservations();
+  try {
+    await ParadisoStore.addReservation({
+      datum: data.get("datum"),
+      vrijeme: data.get("vrijeme"),
+      paket: data.get("paket"),
+      ime: String(data.get("ime") || "").trim(),
+      telefon: String(data.get("telefon") || "").trim(),
+      source: "admin",
+    });
+    reservationForm.reset();
+    await renderReservations();
+  } catch (error) {
+    alert(error.message || "Rezervacija nije sačuvana.");
+  }
 });
 
-reservationsBody.addEventListener("click", (event) => {
+reservationsBody.addEventListener("click", async (event) => {
   const btn = event.target.closest("[data-id]");
   if (!btn || !requireAuth()) return;
   if (!confirm("Obrisati ovu rezervaciju?")) return;
-  ParadisoStore.deleteReservation(btn.dataset.id);
-  renderReservations();
+  try {
+    await ParadisoStore.deleteReservation(btn.dataset.id);
+    await renderReservations();
+  } catch (error) {
+    alert(error.message || "Brisanje nije uspjelo.");
+  }
 });
 
 document.querySelectorAll(".admin-filter").forEach((btn) => {

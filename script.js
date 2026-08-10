@@ -167,7 +167,7 @@ if (bookingForm) {
 
   renderCalendar();
 
-  bookingForm.addEventListener("submit", (event) => {
+  bookingForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     errorEl.hidden = true;
 
@@ -208,19 +208,30 @@ if (bookingForm) {
       return;
     }
 
-    ParadisoStore.addReservation({
-      datum: dateInput.value,
-      vrijeme: vrijeme.value,
-      paket: paket.value,
-      ime,
-      telefon,
-      source: "web",
-    });
+    const submitBtn = bookingForm.querySelector(".booking__submit");
+    if (submitBtn) submitBtn.disabled = true;
 
-    bookingForm.hidden = true;
-    successEl.hidden = false;
-    successText.textContent = `Vaša rezervacija je zaprimljena za ${formatDisplay(
-      selectedDate
-    )} u terminu ${vrijeme.value}, ${paket.value}. Javićemo se na broj ${telefon}.`;
+    try {
+      await ParadisoStore.addReservation({
+        datum: dateInput.value,
+        vrijeme: vrijeme.value,
+        paket: paket.value,
+        ime,
+        telefon,
+        source: "web",
+      });
+
+      bookingForm.hidden = true;
+      successEl.hidden = false;
+      successText.textContent = `Vaša rezervacija je zaprimljena za ${formatDisplay(
+        selectedDate
+      )} u terminu ${vrijeme.value}, ${paket.value}. Javićemo se na broj ${telefon}.`;
+    } catch (error) {
+      errorEl.textContent =
+        error.message || "Rezervacija nije sačuvana. Pokušajte ponovo.";
+      errorEl.hidden = false;
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
+    }
   });
 }

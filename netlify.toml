@@ -1,5 +1,15 @@
 [build]
   publish = "."
+  command = "npm install"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/api/reservations"
+  to = "/.netlify/functions/reservations"
+  status = 200
 
 [[redirects]]
   from = "/admin"

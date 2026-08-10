@@ -1,10 +1,12 @@
-/* Shared data store for reservations + gallery (localStorage) */
+/* Shared data store: reservations via Netlify API, gallery in localStorage */
 window.ParadisoStore = (() => {
   const KEYS = {
-    reservations: "paradiso_reservations",
     gallery: "paradiso_gallery",
     session: "paradiso_admin_session_v2",
+    adminToken: "paradiso_admin_token_v2",
   };
+
+  const API_RESERVATIONS = "/api/reservations";
 
   const ADMIN_PASS_HASH =
     "3404217d72d0c7e6a1a21f95c3083eb2487ee55643f6482a5026e0bfe97d0e96";
@@ -57,33 +59,58 @@ window.ParadisoStore = (() => {
     return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   }
 
-  function getReservations() {
-    return readJSON(KEYS.reservations, []);
+  function adminHeaders(extra = {}) {
+    const token = sessionStorage.getItem(KEYS.adminToken) || "";
+    return token ? { ...extra, "X-Admin-Token": token } : { ...extra };
   }
 
-  function saveReservations(list) {
-    writeJSON(KEYS.reservations, list);
+  async function parseApiError(res) {
+    try {
+      const data = await res.json();
+      return data.error || `Greška (${res.status})`;
+    } catch {
+      return `Greška (${res.status})`;
+    }
   }
 
-  function addReservation(data) {
-    const list = getReservations();
-    const item = {
-      id: uid("rez"),
+  async function getReservations() {
+    const res = await fetch(API_RESERVATIONS, {
+      headers: adminHeaders(),
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error(await parseApiError(res));
+    const data = await res.json();
+    return Array.isArray(data.items) ? data.items : [];
+  }
+
+  async function addReservation(data) {
+    const payload = {
       datum: data.datum,
       vrijeme: data.vrijeme,
       paket: data.paket,
       ime: data.ime,
       telefon: data.telefon,
-      createdAt: new Date().toISOString(),
       source: data.source || "web",
     };
-    list.unshift(item);
-    saveReservations(list);
-    return item;
+    const res = await fetch(API_RESERVATIONS, {
+      method: "POST",
+      headers: adminHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error(await parseApiError(res));
+    const result = await res.json();
+    return result.item;
   }
 
-  function deleteReservation(id) {
-    saveReservations(getReservations().filter((r) => r.id !== id));
+  async function deleteReservation(id) {
+    const res = await fetch(
+      `${API_RESERVATIONS}?id=${encodeURIComponent(id)}`,
+      {
+        method: "DELETE",
+        headers: adminHeaders(),
+      }
+    );
+    if (!res.ok) throw new Error(await parseApiError(res));
   }
 
   function getGalleryState() {
@@ -132,15 +159,20 @@ window.ParadisoStore = (() => {
     const hash = await hashPassword(password);
     if (hash !== ADMIN_PASS_HASH) return false;
     sessionStorage.setItem(KEYS.session, "1");
+    sessionStorage.setItem(KEYS.adminToken, hash);
     return true;
   }
 
   function logout() {
     sessionStorage.removeItem(KEYS.session);
+    sessionStorage.removeItem(KEYS.adminToken);
   }
 
   function isLoggedIn() {
-    return sessionStorage.getItem(KEYS.session) === "1";
+    return (
+      sessionStorage.getItem(KEYS.session) === "1" &&
+      Boolean(sessionStorage.getItem(KEYS.adminToken))
+    );
   }
 
   return {
