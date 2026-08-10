@@ -30,7 +30,32 @@ function blobKey(id) {
   return `item/${id}`;
 }
 
+async function migrateLegacyList(store) {
+  const legacy = await store.get("all", { type: "json" });
+  if (!legacy) return;
+
+  const legacyItems = Array.isArray(legacy)
+    ? legacy
+    : legacy && Array.isArray(legacy.items)
+      ? legacy.items
+      : [];
+
+  for (const item of legacyItems) {
+    if (!item?.id) continue;
+    const key = blobKey(item.id);
+    const existing = await store.get(key, { type: "json" });
+    if (!existing) {
+      await store.setJSON(key, item);
+    }
+  }
+
+  // Prevent deleted items from being restored on the next read.
+  await store.delete("all");
+}
+
 async function listReservations(store) {
+  await migrateLegacyList(store);
+
   const result = await store.list({ prefix: "item/" });
   const blobs = result.blobs || [];
   const items = [];
@@ -38,21 +63,6 @@ async function listReservations(store) {
   for (const entry of blobs) {
     const data = await store.get(entry.key, { type: "json" });
     if (data && data.id) items.push(data);
-  }
-
-  // Migrate legacy single-list blob if present
-  if (!items.length) {
-    const legacy = await store.get("all", { type: "json" });
-    const legacyItems = Array.isArray(legacy)
-      ? legacy
-      : legacy && Array.isArray(legacy.items)
-        ? legacy.items
-        : [];
-    for (const item of legacyItems) {
-      if (!item?.id) continue;
-      await store.setJSON(blobKey(item.id), item);
-      items.push(item);
-    }
   }
 
   items.sort((a, b) =>
