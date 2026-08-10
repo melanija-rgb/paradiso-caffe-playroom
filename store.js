@@ -23,12 +23,12 @@ const ParadisoStore = (() => {
     { id: "ka-14", section: "kafic", src: "images/galerija/kafic/14-kafic.png", alt: "Dugački sto spreman za proslavu u Paradiso kafiću" },
     { id: "ka-04", section: "kafic", src: "images/galerija/kafic/04-kafic.png", alt: "Desert u Paradiso kafiću" },
     { id: "pi-01", section: "pica", src: "images/galerija/kafic/01-kafic.png", alt: "Kafa i desert u Paradiso kafiću" },
-    { id: "pi-05", section: "pica", src: "images/galerija/kafic/05-kafic.png", alt: "Kafa na terasi Paradiso" },
+    { id: "pi-05", section: "pica", src: "images/galerija/kafic/05-kafic.png", alt: "Točeno LAV pivo u Paradiso kafiću" },
     { id: "pi-06", section: "pica", src: "images/galerija/kafic/06-kafic.png", alt: "Ledena kafa i donut na terasi" },
     { id: "pi-12", section: "pica", src: "images/galerija/kafic/12-kafic.png", alt: "Osveženje na terasi Paradiso" },
     { id: "pi-08", section: "pica", src: "images/galerija/kafic/08-kafic.png", alt: "Kokteli Mojito, Aperol i Hugo" },
     { id: "pi-11", section: "pica", src: "images/galerija/kafic/11-kafic.png", alt: "Bezalkoholno piće sa jagodama" },
-    { id: "pi-10", section: "pica", src: "images/galerija/kafic/10-kafic.png", alt: "Točeno pivo u Paradiso kafiću" },
+    { id: "pi-10", section: "pica", src: "images/galerija/kafic/10-kafic.png", alt: "Kafa na terasi Paradiso" },
   ];
 
   async function hashPassword(value) {
