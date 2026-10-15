@@ -30,6 +30,14 @@ function requireAuth() {
   return false;
 }
 
+function sessionExpired(error) {
+  if (!error || error.status !== 401) return false;
+  ParadisoStore.logout();
+  showPanel(false);
+  loginForm.reset();
+  return true;
+}
+
 function formatDate(iso) {
   if (!iso) return "";
   const [y, m, d] = iso.split("-");
@@ -59,6 +67,7 @@ async function renderReservations() {
       reservationsBody.appendChild(tr);
     });
   } catch (error) {
+    if (sessionExpired(error)) return;
     reservationsEmpty.hidden = false;
     reservationsEmpty.textContent =
       error.message || "Ne mogu učitati rezervacije.";
@@ -104,8 +113,11 @@ loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   loginError.hidden = true;
   const password = document.getElementById("admin-password").value;
-  const ok = await ParadisoStore.login(password);
-  if (!ok) {
+  const result = await ParadisoStore.login(password);
+  if (!result.ok) {
+    loginError.textContent = result.unconfigured
+      ? "Prijava trenutno nije podešena."
+      : result.message || "Pogrešna šifra.";
     loginError.hidden = false;
     return;
   }
@@ -146,6 +158,7 @@ reservationForm.addEventListener("submit", async (event) => {
     reservationForm.reset();
     await renderReservations();
   } catch (error) {
+    if (sessionExpired(error)) return;
     alert(error.message || "Rezervacija nije sačuvana.");
   }
 });
@@ -158,6 +171,7 @@ reservationsBody.addEventListener("click", async (event) => {
     await ParadisoStore.deleteReservation(btn.dataset.id);
     await renderReservations();
   } catch (error) {
+    if (sessionExpired(error)) return;
     alert(error.message || "Brisanje nije uspjelo.");
   }
 });

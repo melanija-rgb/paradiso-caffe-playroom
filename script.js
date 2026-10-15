@@ -90,6 +90,7 @@ if (bookingForm) {
   let viewYear = today.getFullYear();
   let viewMonth = today.getMonth();
   let selectedDate = null;
+  let takenSlots = [];
 
   const pad = (n) => String(n).padStart(2, "0");
 
@@ -98,6 +99,37 @@ if (bookingForm) {
 
   const formatDisplay = (date) =>
     `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${date.getFullYear()}.`;
+
+  const applySlotAvailability = () => {
+    const datum = dateInput.value;
+    bookingForm.querySelectorAll('input[name="vrijeme"]').forEach((input) => {
+      const unavailable =
+        Boolean(datum) &&
+        takenSlots.some((slot) => slot.datum === datum && slot.vrijeme === input.value);
+      input.disabled = unavailable;
+      if (unavailable) input.checked = false;
+      const label = input.closest("label");
+      if (!label) return;
+      label.classList.toggle("is-unavailable", unavailable);
+      if (unavailable) label.setAttribute("aria-disabled", "true");
+      else label.removeAttribute("aria-disabled");
+    });
+  };
+
+  const loadAvailability = async () => {
+    if (!window.ParadisoStore || typeof ParadisoStore.getAvailability !== "function") {
+      takenSlots = [];
+      applySlotAvailability();
+      return;
+    }
+    try {
+      const list = await ParadisoStore.getAvailability();
+      takenSlots = Array.isArray(list) ? list : [];
+    } catch {
+      takenSlots = [];
+    }
+    applySlotAvailability();
+  };
 
   const renderCalendar = () => {
     calMonth.textContent = `${monthNames[viewMonth]} ${viewYear}`;
@@ -141,6 +173,7 @@ if (bookingForm) {
         dateInput.value = formatISO(date);
         selectedLabel.textContent = `Odabrani datum: ${formatDisplay(date)}`;
         renderCalendar();
+        applySlotAvailability();
       });
 
       calDays.appendChild(btn);
@@ -166,6 +199,7 @@ if (bookingForm) {
   });
 
   renderCalendar();
+  loadAvailability();
 
   bookingForm.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -230,6 +264,7 @@ if (bookingForm) {
       errorEl.textContent =
         error.message || "Rezervacija nije sačuvana. Pokušajte ponovo.";
       errorEl.hidden = false;
+      if (error.status === 409) await loadAvailability();
     } finally {
       if (submitBtn) submitBtn.disabled = false;
     }

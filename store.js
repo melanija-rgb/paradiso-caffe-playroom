@@ -2,14 +2,12 @@
 window.ParadisoStore = (() => {
   const KEYS = {
     gallery: "paradiso_gallery",
-    session: "paradiso_admin_session_v2",
-    adminToken: "paradiso_admin_token_v2",
+    session: "paradiso_admin_session_v3",
+    adminToken: "paradiso_admin_token_v3",
   };
 
   const API_RESERVATIONS = "/api/reservations";
-
-  const ADMIN_PASS_HASH =
-    "3404217d72d0c7e6a1a21f95c3083eb2487ee55643f6482a5026e0bfe97d0e96";
+  const API_ADMIN_LOGIN = "/api/admin-login";
 
   const DEFAULT_GALLERY = [
     { id: "ig-01", section: "igraonica", src: "images/galerija/igraonica/01-igraonica.png", alt: "Igraonica Paradiso — sto za stoni fudbal i prostor za igru" },
@@ -32,14 +30,6 @@ window.ParadisoStore = (() => {
     { id: "pi-10", section: "pica", src: "images/galerija/kafic/10-kafic.png", alt: "Kafa na terasi Paradiso" },
     { id: "pi-05", section: "pica", src: "images/galerija/kafic/05-kafic.png", alt: "Točeno LAV pivo u Paradiso kafiću" },
   ];
-
-  async function hashPassword(value) {
-    const data = new TextEncoder().encode(`paradiso::${value}`);
-    const digest = await crypto.subtle.digest("SHA-256", data);
-    return [...new Uint8Array(digest)]
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
-  }
 
   function readJSON(key, fallback) {
     try {
@@ -64,13 +54,31 @@ window.ParadisoStore = (() => {
     return token ? { ...extra, "X-Admin-Token": token } : { ...extra };
   }
 
-  async function parseApiError(res) {
+  async function readBody(res) {
     try {
-      const data = await res.json();
-      return data.error || `Greška (${res.status})`;
+      return await res.json();
     } catch {
-      return `Greška (${res.status})`;
+      return {};
     }
+  }
+
+  function errorFromResponse(res, data) {
+    const error = new Error((data && data.error) || `Greška (${res.status})`);
+    error.status = res.status;
+    if (data && data.code) error.code = data.code;
+    return error;
+  }
+
+  async function getAvailability() {
+    const res = await fetch(`${API_RESERVATIONS}?availability=1`, {
+      cache: "no-store",
+    });
+    const data = await readBody(res);
+    if (!res.ok) throw errorFromResponse(res, data);
+    if (!Array.isArray(data.taken)) return [];
+    return data.taken
+      .filter((item) => item && item.datum && item.vrijeme)
+      .map((item) => ({ datum: item.datum, vrijeme: item.vrijeme }));
   }
 
   async function getReservations() {
@@ -78,8 +86,8 @@ window.ParadisoStore = (() => {
       headers: adminHeaders(),
       cache: "no-store",
     });
-    if (!res.ok) throw new Error(await parseApiError(res));
-    const data = await res.json();
+    const data = await readBody(res);
+    if (!res.ok) throw errorFromResponse(res, data);
     return Array.isArray(data.items) ? data.items : [];
   }
 
@@ -97,8 +105,8 @@ window.ParadisoStore = (() => {
       headers: adminHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify(payload),
     });
-    if (!res.ok) throw new Error(await parseApiError(res));
-    const result = await res.json();
+    const result = await readBody(res);
+    if (!res.ok) throw errorFromResponse(res, result);
     return result.item;
   }
 
@@ -110,7 +118,8 @@ window.ParadisoStore = (() => {
         headers: adminHeaders(),
       }
     );
-    if (!res.ok) throw new Error(await parseApiError(res));
+    const data = await readBody(res);
+    if (!res.ok) throw errorFromResponse(res, data);
   }
 
   function getGalleryState() {
@@ -155,12 +164,47 @@ window.ParadisoStore = (() => {
     return item;
   }
 
+  function readTokenPayload(token) {
+    try {
+      const body = String(token || "").split(".")[0];
+      if (!body || !String(token).includes(".")) return null;
+      const base64 = body.replace(/-/g, "+").replace(/_/g, "/");
+      const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+      return JSON.parse(atob(padded));
+    } catch {
+      return null;
+    }
+  }
+
   async function login(password) {
-    const hash = await hashPassword(password);
-    if (hash !== ADMIN_PASS_HASH) return false;
+    let res;
+    let data = {};
+    try {
+      res = await fetch(API_ADMIN_LOGIN, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      data = await readBody(res);
+    } catch {
+      return { ok: false, message: "Prijava nije uspjela. Pokušajte ponovo." };
+    }
+
+    if (data.code === "unconfigured" || res.status === 503) {
+      return {
+        ok: false,
+        unconfigured: true,
+        message: "Prijava trenutno nije podešena.",
+      };
+    }
+
+    if (!res.ok || !data.token) {
+      return { ok: false, message: "Pogrešna šifra." };
+    }
+
     sessionStorage.setItem(KEYS.session, "1");
-    sessionStorage.setItem(KEYS.adminToken, hash);
-    return true;
+    sessionStorage.setItem(KEYS.adminToken, data.token);
+    return { ok: true };
   }
 
   function logout() {
@@ -169,14 +213,20 @@ window.ParadisoStore = (() => {
   }
 
   function isLoggedIn() {
+    const token = sessionStorage.getItem(KEYS.adminToken) || "";
+    const payload = readTokenPayload(token);
     return (
       sessionStorage.getItem(KEYS.session) === "1" &&
-      Boolean(sessionStorage.getItem(KEYS.adminToken))
+      Boolean(payload) &&
+      payload.sub === "admin" &&
+      typeof payload.exp === "number" &&
+      payload.exp > Date.now()
     );
   }
 
   return {
     DEFAULT_GALLERY,
+    getAvailability,
     getReservations,
     addReservation,
     deleteReservation,
@@ -187,6 +237,5 @@ window.ParadisoStore = (() => {
     login,
     logout,
     isLoggedIn,
-    hashPassword,
   };
 })();
