@@ -722,6 +722,19 @@ body.nav-open {
   outline-offset: 2px;
 }
 
+.booking__form .booking__option.is-unavailable,
+.booking__form .booking__option.is-unavailable:hover {
+  border: 1px solid #c5c0b6;
+  background: transparent;
+  color: #c5c0b6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.booking__form .booking__option.is-unavailable span {
+  color: #c5c0b6;
+}
+
 .booking__fields {
   display: grid;
   gap: 1rem;
